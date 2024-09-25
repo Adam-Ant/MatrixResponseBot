@@ -1,5 +1,5 @@
 from mautrix.util.config import BaseProxyConfig, ConfigUpdateHelper
-from mautrix.types import MediaMessageEventContent, MessageType, VideoInfo
+from mautrix.types import MediaMessageEventContent, MessageType, TextMessageEventContent, VideoInfo
 from maubot import Plugin, MessageEvent
 from maubot.handlers import command
 from aiohttp.client_exceptions import InvalidURL
@@ -32,6 +32,9 @@ class ResponseBot(Plugin):
     def get_upload_web_name(self) -> str:
         return f"{self.config['command']}-upload-url"
 
+    def get_dump_mxc_name(self) -> str:
+        return f"{self.config['command']}-dump-mxc"
+
     @command.new(name=get_upload_web_name)
     @command.argument("message", pass_raw=True)
     async def upload_web(self, evt: MessageEvent, message: str) -> None:
@@ -55,16 +58,16 @@ class ResponseBot(Plugin):
                     self.config.save()
                     await evt.reply(f"Added to config. MXC: {uri}")
                 else:
-                    await evt.reply(f"Failed: URL not a video!")
+                    await evt.reply("Failed: URL not a video!")
             else:
                 await evt.reply(f"Failed: Got Response {resp.status}")
         else:
             await evt.reply(
-                f"Your mother is a hamster and your father smells of elderberries!"
+                "Your mother is a hamster and your father smells of elderberries!"
             )
 
     @command.new(name=get_command_name)
-    async def test(self, evt: MessageEvent) -> None:
+    async def send_video(self, evt: MessageEvent) -> None:
         url = self.config["urls"][randint(0, len(self.config["urls"]) - 1)]
         # This whole thing is such a sodding bodge. Why doesn't matrix store any metadata with its MXC :(
         video = await self.client.download_media(url=url)
@@ -81,3 +84,15 @@ class ResponseBot(Plugin):
             ),
         )
         await evt.reply(content)
+
+    @command.new(name=get_dump_mxc_name)
+    async def dump_mxc(self, evt: MessageEvent) -> None:
+        if evt.sender in self.config["whitelist"]:
+            message = TextMessageEventContent(
+                msgtype=MessageType.TEXT,
+                body=f"MXCs:\n\r{'\n\r'.join(self.config["urls"])}",
+            )
+
+            await evt.reply(message)
+        else:
+            await evt.react("lol no")
