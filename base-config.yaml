@@ -1,0 +1,14 @@
+# Who is allowed to use the bot?
+whitelist:
+  - "@TomScott:techdiff.co.uk"
+  - "@MattGray:techdiff.co.uk"
+
+# The main command without the !
+command: rs
+
+# Maubot currently has no sane way of working out the video height & width.
+# Manually specify them here - it should be the size of your largest video clip.
+video_width: 1920
+video_height: 1080
+# The MXC URLs for the media. Commented by default - add through the bot.
+#urls:

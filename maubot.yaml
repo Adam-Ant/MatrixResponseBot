@@ -1,0 +1,10 @@
+id: uk.admn.redshirt
+version: 1.0.0
+modules:
+  - bot
+main_class: ResponseBot
+dependencies:
+  - python-magic>=0.4
+config: true
+extra_files:
+  - base-config.yaml
